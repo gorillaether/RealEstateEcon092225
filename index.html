@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Economics: The Truth About Rates and Returns</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            padding: 80px 40px;
+            overflow-y: auto;
+            text-align: center;
+            flex-grow: 1;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .slide h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #ffed4e;
+        }
+
+        .slide p, .slide li {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .chart-container {
+            width: 80%;
+            max-width: 800px;
+            height: 450px;
+            margin: 20px auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .math-box {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,215,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .myth-buster {
+            background: rgba(220,20,60,0.2);
+            border-left: 5px solid #dc143c;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 700px;
+            border-radius: 10px;
+        }
+
+        .truth-box {
+            background: rgba(34,139,34,0.2);
+            border-left: 5px solid #228b22;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 700px;
+            border-radius: 10px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid #ffd700;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,215,0,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,215,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .diagram-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            min-width: 200px;
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+
+        .arrow {
+            font-size: 2rem;
+            color: #ffd700;
+            margin: 0 20px;
+        }
+
+        ul {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">8</span>
+        </div>
+
+        <div class="slide active">
+            <h1>Real Estate Economics</h1>
+            <h3>The Truth About Fed Rates, Housing Returns, and Market Reality</h3>
+            <p style="font-size: 1.5rem; margin-top: 40px;">Separating Facts from Fiction in Real Estate Sales</p>
+        </div>
+
+        <div class="slide">
+            <h2>Myth: Fed Cuts = Buy Houses Now!</h2>
+            <div class="myth-buster">
+                <h3>❌ The Myth:</h3>
+                <p>"The Fed cut rates! Mortgage rates will drop! Buy now before they go back up!"</p>
+            </div>
+            <div class="truth-box">
+                <h3>✅ The Reality:</h3>
+                <p>The Fed only controls <span class="highlight">short-term rates</span>.</p>
+                <p>Mortgage rates follow <span class="highlight">long-term bonds</span>.</p>
+                <p>These can move in <span class="highlight">opposite directions</span>.</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2>Short End ≠ Long End</h2>
+            <div class="diagram">
+                <div class="diagram-box">
+                    <h3>Fed Funds Rate</h3>
+                    <p>Overnight lending</p>
+                    <p>Controlled by Fed</p>
+                    <p class="highlight">~4.08%</p>
+                </div>
+                <div class="arrow">≠</div>
+                <div class="diagram-box">
+                    <h3>10-30 Year Bonds</h3>
+                    <p>Long-term lending</p>
+                    <p>Market determined</p>
+                    <p class="highlight">~4.1% - 4.7%</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="yieldCurveChart"></canvas>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2>What Actually Drives Mortgage Rates</h2>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; margin-top: 40px;">
+                <div class="diagram-box">
+                    <h3>📈 GDP Growth</h3>
+                    <p>Strong economy = Higher rates</p>
+                </div>
+                <div class="diagram-box">
+                    <h3>🔥 Inflation</h3>
+                    <p>Price increases = Higher rates</p>
+                </div>
+                <div class="diagram-box">
+                    <h3>💰 Government Debt</h3>
+                    <p>More borrowing = Higher rates</p>
+                </div>
+                <div class="diagram-box">
+                    <h3>🌍 Global Demand</h3>
+                    <p>Safe haven demand = Lower rates</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2>The Long-Term Story</h2>
+            <div class="chart-container">
+                <canvas id="housingReturnsChart"></canvas>
+            </div>
+            <div class="math-box">
+                <h3>How to Read This Chart:</h3>
+                <p>On this "log" chart, the straight green line shows steady inflation. Things that grow at a constant rate are always straight lines.</p>
+                <p>Notice how the red line (housing) <span class="highlight">curves sharply upward</span>, pulling away from the steady inflation trend. This shows an unsustainable <span class="highlight">acceleration</span> in price.</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2>A Closer Look: The Recent Deviation</h2>
+            <div class="chart-container">
+                <canvas id="currentValuationChart"></canvas>
+            </div>
+            <div class="math-box">
+                <h3>The Problem Magnified:</h3>
+                <p>This "zoomed-in" linear chart shows the massive dollar gap that has opened up recently.</p>
+                <p>By 2024, the actual price (index <span class="highlight">1500</span>) is far above the inflation-adjusted trend (index <span class="highlight">1029</span>).</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2>The Path Back to Average</h2>
+            <div class="chart-container">
+                <canvas id="futureProjectionChart"></canvas>
+            </div>
+            <div class="math-box">
+                <h3>A 6-Year Horizon:</h3>
+                <p>This shows what happens if prices <span class="highlight">fall by 3.2%</span> annually, while the inflation trend <span class="highlight">grows by 3.2%</span>.</p>
+                <p>Under this scenario, it would take approximately <span class="highlight">6 years</span> for the two lines to cross and for prices to revert to the historical average.</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h2>Questions for Today's Homebuyer</h2>
+            <div class="truth-box" style="text-align: left; max-width: 800px; margin-top: 15px;">
+                <h3>1. Am I Buying Shelter or Speculating?</h3>
+                <p>(Insight from Slide 5) For 60+ years, home prices tracked inflation. The recent price <span class="highlight">acceleration is a historical anomaly</span>. Are you betting this anomaly will continue?</p>
+            </div>
+            <div class="truth-box" style="text-align: left; max-width: 800px; margin-top: 15px;">
+                <h3>2. Am I Comfortable with Today's Premium?</h3>
+                <p>(Insight from Slide 6) Prices today are roughly <span class="highlight">45% above the historical inflation trend</span>. What economic forces justify paying such a premium right now?</p>
+            </div>
+            <div class="truth-box" style="text-align: left; max-width: 800px; margin-top: 15px;">
+                <h3>3. Is My Time Horizon Long Enough?</h3>
+                <p>(Insight from Slide 7) A return to the average could take <span class="highlight">6+ years</span>, during which prices may be flat or declining. Can you commit to staying in the home for at least 10 years to weather a potential correction?</p>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlideIndex].classList.remove('active');
+            currentSlideIndex = (n + totalSlides) % totalSlides;
+            slides[currentSlideIndex].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlideIndex + 1;
+            
+            document.getElementById('prevBtn').disabled = currentSlideIndex === 0;
+            document.getElementById('nextBtn').disabled = currentSlideIndex === totalSlides - 1;
+            
+            if (currentSlideIndex === 2) initYieldCurveChart();
+            if (currentSlideIndex === 4) initHousingReturnsChart();
+            if (currentSlideIndex === 5) initCurrentValuationChart();
+            if (currentSlideIndex === 6) initFutureProjectionChart();
+        }
+
+        function changeSlide(n) {
+            if (n > 0 && currentSlideIndex < totalSlides - 1) {
+                showSlide(currentSlideIndex + 1);
+            } else if (n < 0 && currentSlideIndex > 0) {
+                showSlide(currentSlideIndex - 1);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+        });
+
+        showSlide(0);
+
+        function initYieldCurveChart() {
+            const ctx = document.getElementById('yieldCurveChart');
+            if (ctx && !ctx.chart) {
+                ctx.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Fed Funds (Overnight)', '2-Year', '5-Year', '10-Year', '30-Year'],
+                        datasets: [{
+                            label: 'Yield (%)',
+                            data: [4.08, 3.57, 3.67, 4.11, 4.72],
+                            borderColor: '#ffd700',
+                            backgroundColor: 'rgba(255,215,0,0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: 'U.S. Treasury Yield Curve', color: 'white', font: { size: 18 }},
+                            subtitle: { display: true, text: 'Data as of September 19, 2025. Source: Federal Reserve / U.S. Treasury', color: 'rgba(255, 255, 255, 0.7)', font: { size: 12, style: 'italic' }, padding: { bottom: 20 }}
+                        },
+                        scales: {
+                            x: { title: { display: true, text: 'Loan Maturity', color: 'white', font: { size: 14 }}, ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' }},
+                            y: { title: { display: true, text: 'Interest Rate (Yield %)', color: 'white', font: { size: 14 }}, ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' }}
+                        }
+                    }
+                });
+            }
+        }
+        
+        function initHousingReturnsChart() {
+            const ctx = document.getElementById('housingReturnsChart');
+            if (ctx && !ctx.chart) {
+                
+                const labels = ['1950', '1970', '1990', '2010', '2024'];
+                const actualPriceData = [100, 210, 550, 800, 1500];
+
+                const avgInflationRate = 0.032; 
+                const inflationData = [];
+                const years = [0, 20, 40, 60, 74];
+                for(let i = 0; i < years.length; i++) {
+                    inflationData.push(100 * Math.pow(1 + avgInflationRate, years[i]));
+                }
+
+                ctx.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Actual Housing Prices',
+                            data: actualPriceData,
+                            borderColor: '#dc143c',
+                            backgroundColor: 'rgba(220,20,60,0.1)',
+                            borderWidth: 3,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Inflation Trend (~3.2% annually)',
+                            data: inflationData,
+                            borderColor: '#228b22',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { 
+                                labels: { color: 'white', font: {size: 14} } 
+                            }
+                        }, 
+                        scales: { 
+                            x: { 
+                                title: { display: true, text: 'Year', color: 'white'}, 
+                                ticks: { color: 'white' }
+                            }, 
+                            y: { 
+                                type: 'logarithmic', 
+                                title: { display: true, text: 'Price Index (Log Scale)', color: 'white'}, 
+                                max: 2000,
+                                ticks: { 
+                                    color: 'white',
+                                    callback: function(value, index, values) {
+                                        if (value === 1000 || value === 500 || value === 200 || value === 100) {
+                                            return value;
+                                        }
+                                        return null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function initCurrentValuationChart() {
+            const ctx = document.getElementById('currentValuationChart');
+            if (ctx && !ctx.chart) {
+
+                const labels = ['1990', '2010', '2024'];
+                const actualPriceData = [550, 800, 1500];
+
+                const avgInflationRate = 0.032;
+                const inflationData = [];
+                const baseYearValue = 100 * Math.pow(1 + avgInflationRate, 40);
+                const years = [0, 20, 34];
+                for(let i = 0; i < years.length; i++) {
+                    inflationData.push(baseYearValue * Math.pow(1 + avgInflationRate, years[i]));
+                }
+
+                ctx.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Actual Housing Prices',
+                            data: actualPriceData,
+                            borderColor: '#dc143c',
+                            backgroundColor: 'rgba(220,20,60,0.1)',
+                            borderWidth: 3,
+                            fill: true
+                        },
+                        {
+                            label: 'Inflation Trend',
+                            data: inflationData,
+                            borderColor: '#228b22',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { 
+                                labels: { color: 'white', font: {size: 14} } 
+                            }
+                        },
+                        scales: { 
+                            x: { 
+                                title: { display: true, text: 'Year', color: 'white'}, 
+                                ticks: { color: 'white' }
+                            }, 
+                            y: { 
+                                type: 'linear',
+                                title: { display: true, text: 'Price Index (Linear Scale)', color: 'white'}, 
+                                ticks: { color: 'white' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function initFutureProjectionChart() {
+            const ctx = document.getElementById('futureProjectionChart');
+            if (ctx && !ctx.chart) {
+
+                const labels = ['2024', '2025', '2026', '2027', '2028', '2029', '2030', '2031'];
+                const inflationRate = 0.032;
+                
+                const decliningPrices = [];
+                let lastPrice = 1500;
+                for (let i=0; i < labels.length; i++) {
+                    decliningPrices.push(lastPrice);
+                    lastPrice *= (1 - inflationRate);
+                }
+
+                const growingTrend = [];
+                let lastTrend = 1029;
+                for (let i=0; i < labels.length; i++) {
+                    growingTrend.push(lastTrend);
+                    lastTrend *= (1 + inflationRate);
+                }
+
+                ctx.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Declining House Prices (-3.2% Annually)',
+                            data: decliningPrices,
+                            borderColor: '#dc143c',
+                            backgroundColor: 'rgba(220,20,60,0.1)',
+                            borderWidth: 3
+                        }, {
+                            label: 'Growing Inflation Trend (+3.2% Annually)',
+                            data: growingTrend,
+                            borderColor: '#228b22',
+                            borderWidth: 2,
+                            borderDash: [5, 5]
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { labels: { color: 'white' }}
+                        }, 
+                        scales: { 
+                            x: { 
+                                title: { display: true, text: 'Year', color: 'white'},
+                                ticks: { color: 'white' }
+                            }, 
+                            y: { 
+                                title: { display: true, text: 'Price Index', color: 'white'},
+                                ticks: { color: 'white' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
